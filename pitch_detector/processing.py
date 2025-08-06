@@ -11,7 +11,7 @@ def clean_df(path="data/raw/basic_chinese_characters_ankicard.txt"):
     ]
 
     df = pd.read_csv(path, sep="\t", names=column_names, engine="python", on_bad_lines="skip")
-    df["sound_path"] = df["SoundTag"].str.extract(r'\[sound:(.*?)\]')
+    df["mp3_path"] = df["SoundTag"].str.extract(r'\[sound:(.*?)\]')
 
     # get the pinyin without html
     df["Pinyin"] = df["PinyinHTML"].str.extract(r'<span class="[^"]+">([^<]+)</span>')
