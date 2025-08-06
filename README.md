@@ -6,6 +6,9 @@
 
 Detect and visualize pitches from audio samples.
 
+## Convert mp3 to wav
+for f in *.mp3; do ffmpeg -i "$f" -acodec pcm_s16le -ar 22050 -ac 1 "${f%.mp3}.wav"; done
+
 ## Project Organization
 
 ```
