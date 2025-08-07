@@ -49,9 +49,9 @@ def plot_f0_all_tones(df):
         filtered_df = df[df["tone"] == tone]
 
         for index, row in filtered_df.iterrows():
-            print(index, row["sound_path"])
+            print(index, row["audio_full_path"])
             try:
-                filepath = os.path.join(sound_data_root, row["sound_path"]+".wav")
+                filepath = row["audio_full_path"]
                 print(filepath)
                 data, fs = librosa.load(filepath,sr=None)
                 plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=axes[tone_n],label=tone)
@@ -66,7 +66,6 @@ if __name__ == "__main__":
     plot_tone_distribution(df)
     plt.show()
     # PARAMS
-    sound_data_root = "data/sounds"
     fmin = 50
     fmax = 450
     frame_length = 1024
