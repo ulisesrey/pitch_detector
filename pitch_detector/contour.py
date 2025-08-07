@@ -56,8 +56,6 @@ if __name__ == "__main__":
     sounds = accent_dict[tone]
     print(sounds)
     df = pd.read_csv("data/raw/basic_chinese_characters_ankicard.csv", header=0)
-    # format agnostic path
-    df["sound_path"] = df["mp3_path"].str.removesuffix(".mp3")
 
     # Fitler for character
     filtered_df = df[df["Pinyin_nfd"].str.contains(sounds, na=False)]
