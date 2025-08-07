@@ -42,8 +42,8 @@ def plot_f0_all_tones(df):
     #TODO: Would be best to have one function only, do groupby or use seaborn for subplots
     TODO: It would be better not to use TONE_DICT and use the dataframe column instead
     """
-    fig, axes = plt.subplots(ncols=len(TONE_DICT))
-    for tone_n, tone in enumerate(TONE_DICT):
+    fig, axes = plt.subplots(ncols=len(df["tone"].unique()))
+    for tone_n, tone in enumerate(df["tone"].unique()):
         print(f"Starting with tone {tone}")
 
         filtered_df = df[df["tone"] == tone]
