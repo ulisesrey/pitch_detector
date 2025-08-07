@@ -6,6 +6,7 @@ import librosa
 import numpy as np
 from tones import TONE_DICT
 
+NPZ_FILEPATH = "data/processed/f0_values.npz"
 
 def plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=None, label=None):
     """Calculate and plot F0 Frequency using PYIN algorithm"""
@@ -18,7 +19,6 @@ def plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=None, label=None)
 
     # Convert frame indices to time (in seconds)
     times = librosa.frames_to_time(np.arange(len(f0pyin)), sr=fs, hop_length=hop_length)
-
     # Plot
     if ax is None:
         ax = plt.gca()
@@ -40,7 +40,6 @@ def plot_tone_distribution(df):
 def plot_f0_all_tones(df):
     """Figure with all tones.
     #TODO: Would be best to have one function only, do groupby or use seaborn for subplots
-    TODO: It would be better not to use TONE_DICT and use the dataframe column instead
     """
     fig, axes = plt.subplots(ncols=len(df["tone"].unique()))
     for tone_n, tone in enumerate(df["tone"].unique()):
