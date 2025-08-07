@@ -44,7 +44,7 @@ if __name__ == "__main__":
     frame_length = 1024
     hop_length = 256  # or 512
     
-    df = pd.read_csv("data/raw/basic_chinese_characters_ankicard.csv", header=0)
+    df = pd.read_csv("data/raw/basic_chinese_characters_ankicard.csv", index_col=0, header=0)
 
     for tone, tone_unicode in TONE_DICT.items():
         print(f"Starting with tone {tone}")
