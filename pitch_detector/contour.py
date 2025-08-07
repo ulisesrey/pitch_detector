@@ -8,6 +8,7 @@ import librosa
 import librosa.display
 import pandas as pd
 import os
+from tones import TONE_DICT
 
 def plot_f0(data, fmin, fmax, frame_length, hop_length, label=None):
     """Calculate and plot F0 Frequency using PYIN algorithm"""
@@ -43,17 +44,9 @@ if __name__ == "__main__":
     frame_length = 1024
     hop_length = 256  # or 512
     
-    tone_dict = {
-        #"Tone 1 ( ̄)": "\u0304",
-        "Tone 2 ( ́)": "\u0301",
-        "Tone 3 ( ̌)": "\u030C",
-        "Tone 4 ( ̀)": "\u0300",
-        "Tone 5 (neutral)": None
-    }
-
     df = pd.read_csv("data/raw/basic_chinese_characters_ankicard.csv", header=0)
 
-    for tone, tone_unicode in tone_dict.items():
+    for tone, tone_unicode in TONE_DICT.items():
         print(f"Starting with tone {tone}")
         if tone != "Tone 5 (neutral)":
             # Fitler for tone
