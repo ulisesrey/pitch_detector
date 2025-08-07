@@ -10,6 +10,7 @@ import pandas as pd
 import os
 
 def plot_f0(data, fmin, fmax, frame_length, hop_length, label=None):
+    """Calculate and plot F0 Frequency using PYIN algorithm"""
     f0pyin, voiced_flag, voiced_prob = librosa.pyin(data.astype(float), 
                                     sr = fs, # sampling frequency
                                     fmin=fmin, 
@@ -17,17 +18,12 @@ def plot_f0(data, fmin, fmax, frame_length, hop_length, label=None):
                                     frame_length=frame_length, 
                                     hop_length=hop_length) 
 
-
-
     # Convert frame indices to time (in seconds)
     times = librosa.frames_to_time(np.arange(len(f0pyin)), sr=fs, hop_length=hop_length)
 
     # Plot
     #plt.figure(figsize=(10, 4))
     plt.plot(times, f0pyin, color='grey')
-
-    # Optionally overlay voicing probability
-    # plt.plot(times, voiced_prob * f0_range_Hz[1], label='Voiced Probability (scaled)', alpha=0.5)
 
     # Formatting
     plt.xlabel('Time (s)')
