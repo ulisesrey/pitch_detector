@@ -15,13 +15,16 @@ def clean_df(path="data/raw/basic_chinese_characters_ankicard.txt"):
     df["mp3_path"] = df["sound_tag"].str.extract(r'\[sound:(.*?)\]')
     # format agnostic path
     df["sound_path"] = df["mp3_path"].str.removesuffix(".mp3")
-
+    # TODO: add full path to audio file
+    # df["audio_full_path"]=os.path.join(root, df["sound_path"])
+    
     # get the pinyin without html
     df["pinyin"] = df["pinyin_HTML"].str.extract(r'<span class="[^"]+">([^<]+)</span>')
     # get the accent in unicode
     df["pinyin_nfd"]=df["pinyin"].apply(transform_accents)
     # detect tone
     df["tone"] = df["pinyin_nfd"].apply(identify_tone)
+
     return df
 
 def transform_accents(word):
