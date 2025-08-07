@@ -1,9 +1,10 @@
 import pandas as pd
 import unicodedata
 import re
+import os
 from tones import TONE_DICT
 
-def clean_df(path="data/raw/basic_chinese_characters_ankicard.txt"):
+def clean_df(path="data/raw/basic_chinese_characters_ankicard.txt", sound_path="data/sounds"):
 
     column_names = ["character", "character_HTML", "pinyin_HTML",
         "english_gloss", "example1", "example2", "example3", "example4", "example5",
@@ -12,11 +13,15 @@ def clean_df(path="data/raw/basic_chinese_characters_ankicard.txt"):
     ]
 
     df = pd.read_csv(path, sep="\t", names=column_names, engine="python", on_bad_lines="skip")
-    df["mp3_path"] = df["sound_tag"].str.extract(r'\[sound:(.*?)\]')
-    # format agnostic path
-    df["sound_path"] = df["mp3_path"].str.removesuffix(".mp3")
-    # TODO: add full path to audio file
-    # df["audio_full_path"]=os.path.join(root, df["sound_path"])
+    # Process audio paths
+    df["mp3_filename"] = df["sound_tag"].str.extract(r'\[sound:(.*?)\]')
+    # wav file path
+    df["wav_filename"] = df["mp3_filename"].str.replace(r'\.\w+$', '.wav', regex=True)
+    df["audio_full_path"]=df["wav_filename"].apply(
+        lambda x: os.path.join(sound_path, x)
+        if pd.notna(x) else None)
+    # drop unneeded columns
+    df.drop(columns=["sound_tag","mp3_filename", "wav_filename"], inplace=True)
     
     # get the pinyin without html
     df["pinyin"] = df["pinyin_HTML"].str.extract(r'<span class="[^"]+">([^<]+)</span>')
