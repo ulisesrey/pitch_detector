@@ -60,6 +60,14 @@ def plot_f0_all_tones(df):
         ax.set_ylim([50, 250])
         ax.set_xlim([0, 2])
 
+
+def plot_f0_all(df):
+    f0 = np.load("data/processed/f0_values.npz")
+    
+    fig, axes = plt.subplots(ncols=len(df["tone"].unique()))
+    for tone in df["tone"].unique():    
+        for index, row in df.iterrows():
+
 if __name__ == "__main__":
     df = pd.read_csv("data/raw/basic_chinese_characters_ankicard.csv", index_col=0, header=0)
     plot_tone_distribution(df)
