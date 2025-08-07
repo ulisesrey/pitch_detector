@@ -41,12 +41,21 @@ def transform_accents(word):
 
 def identify_tone(word_nfd):
     """Identify the corresponding Tone based on the NFD word"""
-    pattern = r"[aeiouü]"
-    if re.search(pattern, word_nfd):
-        for tone, unicode_tone in TONE_DICT.items():
-            if unicode_tone in word_nfd:
-                return tone
-        return "Tone 5 (neutral)"
+    vowel_pattern = r"[aeiouü]"
+    TONE_MARKS = list(TONE_DICT.values())
+    tone_pattern = "[" + "".join(TONE_MARKS) + "]"
+
+    if re.search(vowel_pattern, word_nfd):
+        # calculate number of tones per word
+        n_tones = len(re.findall(tone_pattern, word_nfd))
+        if n_tones > 1:
+            print("Multiple tones in word")
+            return "Multiple Tones"
+        else:
+            for tone, unicode_tone in TONE_DICT.items():
+                if unicode_tone in word_nfd:
+                    return tone
+            return "Tone 5 (neutral)"
     else:
         return "No vowel found"
 
