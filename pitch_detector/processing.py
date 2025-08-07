@@ -40,7 +40,10 @@ def transform_accents(word):
     return word_nfd
 
 def identify_tone(word_nfd):
-    """Identify the corresponding Tone based on the NFD word"""
+    """Identify the corresponding Tone based on the NFD word
+    NOTE: Tone is already specified in dataframe before this,
+    Ex:
+    <span class=""tone4"">诉</span>"""
     vowel_pattern = r"[aeiouü]"
     TONE_MARKS = list(TONE_DICT.values())
     tone_pattern = "[" + "".join(TONE_MARKS) + "]"
