@@ -1,15 +1,75 @@
 # Initialization
+import os
 import matplotlib.pyplot as plt
 import pandas as pd
+import librosa
+import numpy as np
+from tones import TONE_DICT
 
+
+def plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=None, label=None):
+    """Calculate and plot F0 Frequency using PYIN algorithm"""
+    f0pyin, voiced_flag, voiced_prob = librosa.pyin(data.astype(float), 
+                                    sr = fs, # sampling frequency
+                                    fmin=fmin, 
+                                    fmax=fmax, 
+                                    frame_length=frame_length, 
+                                    hop_length=hop_length) 
+
+    # Convert frame indices to time (in seconds)
+    times = librosa.frames_to_time(np.arange(len(f0pyin)), sr=fs, hop_length=hop_length)
+
+    # Plot
+    if ax is None:
+        ax = plt.gca()
+    
+    ax.plot(times, f0pyin, color='grey')
+
+    # Formatting
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Fundamental Frequency (Hz)')
+    ax.set_title(f'F₀ estimation of {label}')
+    ax.legend()
+    ax.grid(True)
+    #ax.tight_layout()
 
 def plot_tone_distribution(df):
     """Plot tone distribution"""
     df["tone"].value_counts().plot.bar()
 
+def plot_f0_all_tones(df):
+    """Figure with all tones.
+    #TODO: Would be best to have one function only, do groupby or use seaborn for subplots
+    TODO: It would be better not to use TONE_DICT and use the dataframe column instead
+    """
+    fig, axes = plt.subplots(ncols=len(TONE_DICT))
+    for tone_n, tone in enumerate(TONE_DICT):
+        print(f"Starting with tone {tone}")
 
+        filtered_df = df[df["tone"] == tone]
+
+        for index, row in filtered_df.iterrows():
+            print(index, row["sound_path"])
+            try:
+                filepath = os.path.join(sound_data_root, row["sound_path"]+".wav")
+                print(filepath)
+                data, fs = librosa.load(filepath,sr=None)
+                plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=axes[tone_n],label=tone)
+            except Exception as e:
+                print(f"⚠️ Error processing {filepath}: {e}")
+    for ax in axes:
+        ax.set_ylim([50, 250])
+        ax.set_xlim([0, 2])
 
 if __name__ == "__main__":
     df = pd.read_csv("data/raw/basic_chinese_characters_ankicard.csv", index_col=0, header=0)
     plot_tone_distribution(df)
+    plt.show()
+    # PARAMS
+    sound_data_root = "data/sounds"
+    fmin = 50
+    fmax = 450
+    frame_length = 1024
+    hop_length = 256  # or 512
+    plot_f0_all_tones(df)
     plt.show()
