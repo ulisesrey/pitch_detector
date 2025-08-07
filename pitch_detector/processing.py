@@ -1,24 +1,27 @@
 import pandas as pd
 import unicodedata
 import re
-
+from tones import TONE_DICT
 
 def clean_df(path="data/raw/basic_chinese_characters_ankicard.txt"):
 
-    column_names = ["Character", "CharacterHTML", "PinyinHTML",
-        "EnglishGloss", "Example1", "Example2", "Example3", "Example4", "Example5",
-        "ChineseSentenceHTML", "EnglishTranslation", "PinyinSentence", "SoundTag",
-        "StrokeOrderImage", "CharSetNumber"
+    column_names = ["character", "character_HTML", "pinyin_HTML",
+        "english_gloss", "example1", "example2", "example3", "example4", "example5",
+        "chinese_sentence_HTML", "english_translation", "pinyin_sentence", "sound_tag",
+        "stroke_order_image", "char_set_number"
     ]
 
     df = pd.read_csv(path, sep="\t", names=column_names, engine="python", on_bad_lines="skip")
-    df["mp3_path"] = df["SoundTag"].str.extract(r'\[sound:(.*?)\]')
+    df["mp3_path"] = df["sound_tag"].str.extract(r'\[sound:(.*?)\]')
     # format agnostic path
     df["sound_path"] = df["mp3_path"].str.removesuffix(".mp3")
 
     # get the pinyin without html
-    df["Pinyin"] = df["PinyinHTML"].str.extract(r'<span class="[^"]+">([^<]+)</span>')
-    df["Pinyin_nfd"]=df["Pinyin"].apply(transform_accents)
+    df["pinyin"] = df["pinyin_HTML"].str.extract(r'<span class="[^"]+">([^<]+)</span>')
+    # get the accent in unicode
+    df["pinyin_nfd"]=df["pinyin"].apply(transform_accents)
+    # detect tone
+    df["tone"] = df["pinyin_nfd"].apply(identify_tone)
     return df
 
 def transform_accents(word):
@@ -36,9 +39,22 @@ def transform_accents(word):
     word_nfd = unicodedata.normalize("NFD", word)
     return word_nfd
 
+def identify_tone(word_nfd):
+    """Identify the corresponding Tone based on the NFD word"""
+    pattern = r"[aeiouü]"
+    if re.search(pattern, word_nfd):
+        for tone, unicode_tone in TONE_DICT.items():
+            if unicode_tone in word_nfd:
+                return tone
+        return "Tone 5 (neutral)"
+    else:
+        return "No vowel found"
+
+    
+
 if __name__ == "__main__":
     df = clean_df()
     print(df)
     df.to_csv("data/raw/basic_chinese_characters_ankicard.csv")
-    filtered_df = df[df["Pinyin"].str.contains("ǎ", na=False)]
+    filtered_df = df[df["pinyin"].str.contains("ǎ", na=False)]
     print("end")
