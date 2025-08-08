@@ -20,6 +20,13 @@ def clean_df(path="data/raw/basic_chinese_characters_ankicard.txt", sound_path="
     df["audio_full_path"]=df["wav_filename"].apply(
         lambda x: os.path.join(sound_path, x)
         if pd.notna(x) else None)
+
+    # Replace paths that don't exist with None
+    df["audio_full_path"] = df["audio_full_path"].apply(
+    lambda path: path if pd.notna(path) and os.path.exists(path) else None
+)
+    # drop rows with None or Nan audio full path
+    df.dropna(subset=["audio_full_path"], inplace=True)
     # drop unneeded columns
     df.drop(columns=["sound_tag","mp3_filename", "wav_filename"], inplace=True)
     
@@ -49,7 +56,7 @@ def transform_accents(word):
 
 def identify_tone(word_nfd):
     """Identify the corresponding Tone based on the NFD word
-    NOTE: Tone is already specified in dataframe before this,
+    NOTE: Tone is already specified in dataframe before doing this,
     Ex:
     <span class=""tone4"">诉</span>"""
     vowel_pattern = r"[aeiouü]"
