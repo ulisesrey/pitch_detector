@@ -5,7 +5,6 @@ import os
 from tqdm import tqdm
 import numpy as np
 
-# TODO: Will contain the F0 detection code
 def compute_f0(data, fs, fmin, fmax, frame_length, hop_length):
     """Compute F0 Frequency using PYIN algorithm"""
     f0pyin, voiced_flag, voiced_prob = librosa.pyin(data.astype(float), 
