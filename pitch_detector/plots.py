@@ -37,45 +37,37 @@ def plot_tone_distribution(df):
     """Plot tone distribution"""
     df["tone"].value_counts().plot.bar()
 
-def plot_f0_all_tones(df):
-    """Figure with all tones.
-    #TODO: Would be best to have one function only, do groupby or use seaborn for subplots
-    """
-    fig, axes = plt.subplots(ncols=len(df["tone"].unique()))
-    for tone_n, tone in enumerate(df["tone"].unique()):
-        print(f"Starting with tone {tone}")
-
-        filtered_df = df[df["tone"] == tone]
-
-        for index, row in filtered_df.iterrows():
-            print(index, row["audio_full_path"])
-            try:
-                filepath = row["audio_full_path"]
-                print(filepath)
-                data, fs = librosa.load(filepath,sr=None)
-                plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=axes[tone_n],label=tone)
-            except Exception as e:
-                print(f"⚠️ Error processing {filepath}: {e}")
-    for ax in axes:
-        ax.set_ylim([50, 250])
-        ax.set_xlim([0, 2])
-
 
 def plot_f0_all(df):
-    f0 = np.load("data/processed/f0_values.npz")
+    """Plot the F0 of each tone based on the dataframe and the npz file generated
+    with the contour module."""
+    f0_data = np.load("data/processed/f0_values.npz")
     
     fig, axes = plt.subplots(ncols=len(df["tone"].unique()))
-    for tone in df["tone"].unique():    
-        for index, row in df.iterrows():
+    for tone_n, tone in enumerate(df["tone"].unique()):
+        filtered_df = df[df["tone"]==tone]    
+        for index, row in filtered_df.iterrows():
+            f0pyin = f0_data[f"{index}_f0pyin"]
+            times = f0_data[f"{index}_times"]
 
+            axes[tone_n].plot(times, f0pyin, alpha=0.3, color="grey")
+
+    for ax in axes:
+        ax.set_xlabel("Time (s)")
+        ax.set_ylabel("F₀ (Hz)")
+        ax.set_ylim([50, 250])
+        ax.set_xlim([0, 2])
+        ax.grid(True)
+            
 if __name__ == "__main__":
     df = pd.read_csv("data/raw/basic_chinese_characters_ankicard.csv", index_col=0, header=0)
-    plot_tone_distribution(df)
-    plt.show()
+    #plot_tone_distribution(df)
+    #plt.show()
     # PARAMS
     fmin = 50
     fmax = 450
     frame_length = 1024
     hop_length = 256  # or 512
-    plot_f0_all_tones(df)
+    #plot_f0_all_tones(df)
+    plot_f0_all(df)
     plt.show()
