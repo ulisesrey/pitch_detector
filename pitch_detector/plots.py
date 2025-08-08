@@ -38,10 +38,9 @@ def plot_tone_distribution(df):
     df["tone"].value_counts().plot.bar()
 
 
-def plot_f0_all(df):
+def plot_f0_all(df, f0_data):
     """Plot the F0 of each tone based on the dataframe and the npz file generated
     with the contour module."""
-    f0_data = np.load("data/processed/f0_values.npz")
     
     fig, axes = plt.subplots(ncols=len(df["tone"].unique()))
     for tone_n, tone in enumerate(df["tone"].unique()):
@@ -61,6 +60,7 @@ def plot_f0_all(df):
             
 if __name__ == "__main__":
     df = pd.read_csv("data/raw/basic_chinese_characters_ankicard.csv", index_col=0, header=0)
+    f0_data = np.load("data/processed/f0_values.npz")
     #plot_tone_distribution(df)
     #plt.show()
     # PARAMS
@@ -69,5 +69,5 @@ if __name__ == "__main__":
     frame_length = 1024
     hop_length = 256  # or 512
     #plot_f0_all_tones(df)
-    plot_f0_all(df)
+    plot_f0_all(df, f0_data)
     plt.show()
