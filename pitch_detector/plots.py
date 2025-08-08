@@ -50,6 +50,7 @@ def plot_f0_all(df, f0_data):
             times = f0_data[f"{index}_times"]
 
             axes[tone_n].plot(times, f0pyin, alpha=0.3, color="grey")
+            axes[tone_n].set_title(f"F₀ of {tone}")
 
     for ax in axes:
         ax.set_xlabel("Time (s)")
@@ -63,11 +64,6 @@ if __name__ == "__main__":
     f0_data = np.load("data/processed/f0_values.npz")
     #plot_tone_distribution(df)
     #plt.show()
-    # PARAMS
-    fmin = 50
-    fmax = 450
-    frame_length = 1024
-    hop_length = 256  # or 512
     #plot_f0_all_tones(df)
     plot_f0_all(df, f0_data)
     plt.show()
