@@ -127,7 +127,9 @@
                     statusMessage.textContent = 'Analysis complete!';
                     console.log('Server response:', result);
                     // Display the plot from the server response
-                    f0Plot.src = result.plot_url;
+                    const plotUrl = result.plot_url;
+                    // Append a timestamp to the URL to prevent caching
+                    f0Plot.src = `${plotUrl}?t=${new Date().getTime()}`;
                     plotContainer.classList.remove('hidden');
                 } else {
                     statusMessage.textContent = `Error uploading file: ${result.error}`;
