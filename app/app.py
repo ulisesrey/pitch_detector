@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Ensure the 'uploads' directory exists
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'app/uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
