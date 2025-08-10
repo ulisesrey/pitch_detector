@@ -3,68 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Counter</title>
+    <title>Audio Recorder</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
-        <h1 class="text-2xl font-bold mb-4">Word Counter</h1>
+        <h1 class="text-2xl font-bold mb-4">Audio Recorder</h1>
         
-        <input 
-            type="text" 
-            id="textInput" 
-            placeholder="Type your sentence here..." 
-            class="w-full p-2 mb-4 border rounded-md"
-        >
-
         <button 
-            id="countButton" 
+            id="recordButton" 
             class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-200"
         >
-            Count Words
+            Start Recording
         </button>
 
-        <div class="mt-6">
-            <h2 class="text-xl font-medium">Result:</h2>
-            <p id="result" class="text-gray-700 text-2xl font-bold mt-2">0</p>
+        <div class="mt-6 hidden" id="audioContainer">
+            <h2 class="text-xl font-medium mb-2">Your Recording:</h2>
+            <audio id="audioPlayer" controls class="w-full rounded-md"></audio>
         </div>
     </div>
 
     <script>
-        const textInput = document.getElementById('textInput');
-        const countButton = document.getElementById('countButton');
-        const resultParagraph = document.getElementById('result');
-        
-        countButton.addEventListener('click', async () => {
-            const text = textInput.value;
-            
-            // Check if the input is empty
-            if (text.trim() === '') {
-                resultParagraph.textContent = '0';
-                return;
-            }
+        // Get references to the HTML elements
+        const recordButton = document.getElementById('recordButton');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioContainer = document.getElementById('audioContainer');
 
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        // Function to handle the recording process
+        async function startRecording() {
             try {
-                // Send the text to our Flask server
-                const response = await fetch('http://127.0.0.1:5000/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ sentence: text })
-                });
-
-                // Get the JSON response
-                const data = await response.json();
+                // Get access to the user's microphone
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
                 
-                // Update the result on the page
-                resultParagraph.textContent = data.word_count;
+                // Event handler for when data becomes available
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                // Event handler for when recording stops
+                mediaRecorder.onstop = () => {
+                    // Create a Blob from the audio chunks
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    // Create a URL for the Blob
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    // Set the audio player's source and show the container
+                    audioPlayer.src = audioUrl;
+                    audioContainer.classList.remove('hidden');
+
+                    // Reset for the next recording
+                    audioChunks = [];
+                    // You will send this audioBlob to the server in a later step
+                    console.log('Recording stopped. Audio Blob created:', audioBlob);
+                };
+
+                // Start the recording
+                mediaRecorder.start();
+                isRecording = true;
+                recordButton.textContent = 'Stop Recording';
+                recordButton.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                recordButton.classList.add('bg-red-500', 'hover:bg-red-600');
+                
+                // Hide the audio player while recording
+                audioContainer.classList.add('hidden');
+                audioPlayer.src = '';
+
+                console.log('Recording started...');
 
             } catch (error) {
-                console.error('Error fetching word count:', error);
-                resultParagraph.textContent = 'Error!';
+                console.error('Error accessing microphone:', error);
+                // In a real app, you would show a message to the user here
+                alert('Could not access microphone. Please allow microphone permissions.');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                isRecording = false;
+                recordButton.textContent = 'Start Recording';
+                recordButton.classList.remove('bg-red-500', 'hover:bg-red-600');
+                recordButton.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                console.log('Recording stopped.');
+            }
+        }
+
+        // Event listener for the button click
+        recordButton.addEventListener('click', () => {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
             }
         });
+
     </script>
 </body>
 </html>
