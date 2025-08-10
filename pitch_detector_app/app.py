@@ -9,10 +9,6 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 import sys
-# Add the parent directory to the Python path
-# This allows the app to find modules in the 'pitch_detector' directory
-#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 
 from contour import compute_f0
 from plots import plot_f0
@@ -91,7 +87,7 @@ def upload_audio():
             return jsonify({
                 'message': 'File uploaded and analyzed successfully',
                 'filepath': filepath,
-                'plot_url': f'/static/plots/{plot_filename}'
+                'plot_url': f'/static/plots/{plot_filename}' # URL needs to be relative!
             }), 200
 
     except Exception as e:
