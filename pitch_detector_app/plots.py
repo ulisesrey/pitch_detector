@@ -32,6 +32,7 @@ def plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=None, label=None)
     ax.legend()
     ax.grid(True)
     #ax.tight_layout()
+    return ax
 
 def plot_tone_distribution(df):
     """Plot tone distribution"""

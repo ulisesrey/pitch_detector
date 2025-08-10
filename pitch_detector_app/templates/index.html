@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Recorder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+        <h1 class="text-2xl font-bold mb-4">Audio Recorder</h1>
+        
+        <button 
+            id="recordButton" 
+            class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-200"
+        >
+            Start Recording
+        </button>
+
+        <div class="mt-6 hidden" id="audioContainer">
+            <h2 class="text-xl font-medium mb-2">Your Recording:</h2>
+            <audio id="audioPlayer" controls class="w-full rounded-md"></audio>
+        </div>
+        
+        <div id="statusMessage" class="mt-4 text-sm font-medium text-gray-600"></div>
+
+        <div id="plotContainer" class="mt-6 hidden">
+            <h2 class="text-xl font-medium mb-2">Analysis Plot:</h2>
+            <img id="f0Plot" class="w-full rounded-md">
+        </div>
+    </div>
+
+    <script>
+        // Get references to the HTML elements
+        const recordButton = document.getElementById('recordButton');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioContainer = document.getElementById('audioContainer');
+        const statusMessage = document.getElementById('statusMessage');
+        const plotContainer = document.getElementById('plotContainer');
+        const f0Plot = document.getElementById('f0Plot');
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        // Function to handle the recording process
+        async function startRecording() {
+            try {
+                // Get access to the user's microphone
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                
+                audioChunks = [];
+                // Event handler for when data becomes available
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                // Event handler for when recording stops
+                mediaRecorder.onstop = async () => {
+                    // Create a Blob from the audio chunks
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    // Create a URL for the Blob to play it in the browser
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    // Set the audio player's source and show the container
+                    audioPlayer.src = audioUrl;
+                    audioContainer.classList.remove('hidden');
+
+                    // Now, send the audio to the server
+                    await uploadAudio(audioBlob);
+                };
+
+                // Start the recording
+                mediaRecorder.start();
+                isRecording = true;
+                recordButton.textContent = 'Stop Recording';
+                recordButton.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                recordButton.classList.add('bg-red-500', 'hover:bg-red-600');
+                
+                // Hide the audio player and plot while recording
+                audioContainer.classList.add('hidden');
+                audioPlayer.src = '';
+                plotContainer.classList.add('hidden');
+                f0Plot.src = '';
+                statusMessage.textContent = 'Recording started...';
+
+                console.log('Recording started...');
+
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                statusMessage.textContent = 'Could not access microphone. Please allow microphone permissions.';
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                isRecording = false;
+                recordButton.textContent = 'Start Recording';
+                recordButton.classList.remove('bg-red-500', 'hover:bg-red-600');
+                recordButton.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                statusMessage.textContent = 'Recording stopped.';
+            }
+        }
+
+        // Function to upload the audio to the server
+        async function uploadAudio(audioBlob) {
+            statusMessage.textContent = 'Uploading audio for analysis...';
+            const formData = new FormData();
+            formData.append('audio_file', audioBlob, 'recording.wav');
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/upload-audio', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    statusMessage.textContent = 'Analysis complete!';
+                    console.log('Server response:', result);
+                    // Display the plot from the server response
+                    const plotUrl = result.plot_url;
+                    // Append a timestamp to the URL to prevent caching
+                    f0Plot.src = `${plotUrl}?t=${new Date().getTime()}`;
+                    plotContainer.classList.remove('hidden');
+                } else {
+                    statusMessage.textContent = `Error uploading file: ${result.error}`;
+                    console.error('Server error:', result.error);
+                }
+            } catch (error) {
+                statusMessage.textContent = 'Error during upload. Check console for details.';
+                console.error('Error uploading file:', error);
+            }
+        }
+
+        // Event listener for the button click
+        recordButton.addEventListener('click', () => {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        });
+    </script>
+</body>
+</html>
