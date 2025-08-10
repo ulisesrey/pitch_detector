@@ -1,6 +1,12 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 import os
+import librosa
+import librosa.display
+import matplotlib.pyplot as plt
+import numpy as np
+from pitch_detector.contour import compute_f0
+from pitch_detector.plots import plot_f0
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -8,9 +14,12 @@ app = Flask(__name__)
 CORS(app)
 
 # Ensure the 'uploads' directory exists
-UPLOAD_FOLDER = 'app/uploads'
+UPLOAD_FOLDER = 'uploads'
+PLOT_FOLDER = 'static/plots'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+if not os.path.exists(PLOT_FOLDER):
+    os.makedirs(PLOT_FOLDER)
 
 @app.route('/', methods=['GET'])
 def serve_index():
@@ -22,7 +31,7 @@ def serve_index():
 @app.route('/upload-audio', methods=['POST'])
 def upload_audio():
     """
-    API endpoint to receive and save an audio file.
+    API endpoint to receive, save, and analyze an audio file.
     """
     try:
         # Check if the POST request has a file part
@@ -40,17 +49,46 @@ def upload_audio():
             filepath = os.path.join(UPLOAD_FOLDER, audio_file.filename)
             audio_file.save(filepath)
             
-            # Here you would add the analysis code, which we'll do in a later step
             print(f"File saved successfully at {filepath}")
 
-            return jsonify({'message': 'File uploaded successfully', 'filepath': filepath}), 200
+            # Now, perform the audio analysis
+            data, fs = librosa.load(filepath, sr=None)
+
+            # Define parameters for pitch detection
+            fmin = 50
+            fmax = 450
+            frame_length = 1024
+            hop_length = 256  # or 512
+            
+            # This uses librosa's PYIN algorithm. You can replace this with your compute_f0 function.
+            # f0pyin, voiced_flag, voiced_prob, times = compute_f0(data,
+            #                                                     fs,
+            #                                                     fmin,
+            #                                                     fmax,
+            #                                                     frame_length,
+            #                                                     hop_length)
+
+            # Let's create a plot
+            fig, ax = plt.subplot()
+            ax = plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=ax, label=None)
+            
+            # Save the plot to the static folder so the frontend can access it
+            plot_filename = f"{os.path.splitext(audio_file.filename)[0]}_f0_plot.png"
+            plot_filepath = os.path.join(PLOT_FOLDER, plot_filename)
+            plt.savefig(plot_filepath)
+            fig.close(fig) # Close the figure to free up memory
+
+            # Return the path to the plot in the JSON response
+            return jsonify({
+                'message': 'File uploaded and analyzed successfully',
+                'filepath': filepath,
+                'plot_url': f'/static/plots/{plot_filename}'
+            }), 200
 
     except Exception as e:
         # Return an error message if something goes wrong
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # Make sure to create a "templates" directory with your index.html file
-    # and an "uploads" directory for the audio files.
     app.run(debug=True, port=5000)
 
