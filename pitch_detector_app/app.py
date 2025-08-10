@@ -3,10 +3,19 @@ from flask_cors import CORS
 import os
 import librosa
 import librosa.display
+import matplotlib
+matplotlib.use('Agg')  # This is the critical line to prevent GUI errors
 import matplotlib.pyplot as plt
+
 import numpy as np
-from pitch_detector.contour import compute_f0
-from pitch_detector.plots import plot_f0
+import sys
+# Add the parent directory to the Python path
+# This allows the app to find modules in the 'pitch_detector' directory
+#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+
+from contour import compute_f0
+from plots import plot_f0
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -14,8 +23,8 @@ app = Flask(__name__)
 CORS(app)
 
 # Ensure the 'uploads' directory exists
-UPLOAD_FOLDER = 'uploads'
-PLOT_FOLDER = 'static/plots'
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
+PLOT_FOLDER = os.path.join(os.path.dirname(__file__), 'static/plots')
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 if not os.path.exists(PLOT_FOLDER):
@@ -69,14 +78,14 @@ def upload_audio():
             #                                                     hop_length)
 
             # Let's create a plot
-            fig, ax = plt.subplot()
+            fig, ax = plt.subplots()
             ax = plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=ax, label=None)
             
             # Save the plot to the static folder so the frontend can access it
             plot_filename = f"{os.path.splitext(audio_file.filename)[0]}_f0_plot.png"
             plot_filepath = os.path.join(PLOT_FOLDER, plot_filename)
             plt.savefig(plot_filepath)
-            fig.close(fig) # Close the figure to free up memory
+            plt.close(fig) # Close the figure to free up memory
 
             # Return the path to the plot in the JSON response
             return jsonify({

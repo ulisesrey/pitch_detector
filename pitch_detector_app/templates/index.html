@@ -28,6 +28,11 @@
         </div>
         
         <div id="statusMessage" class="mt-4 text-sm font-medium text-gray-600"></div>
+
+        <div id="plotContainer" class="mt-6 hidden">
+            <h2 class="text-xl font-medium mb-2">Analysis Plot:</h2>
+            <img id="f0Plot" class="w-full rounded-md">
+        </div>
     </div>
 
     <script>
@@ -36,6 +41,8 @@
         const audioPlayer = document.getElementById('audioPlayer');
         const audioContainer = document.getElementById('audioContainer');
         const statusMessage = document.getElementById('statusMessage');
+        const plotContainer = document.getElementById('plotContainer');
+        const f0Plot = document.getElementById('f0Plot');
 
         let mediaRecorder;
         let audioChunks = [];
@@ -76,9 +83,11 @@
                 recordButton.classList.remove('bg-blue-500', 'hover:bg-blue-600');
                 recordButton.classList.add('bg-red-500', 'hover:bg-red-600');
                 
-                // Hide the audio player while recording
+                // Hide the audio player and plot while recording
                 audioContainer.classList.add('hidden');
                 audioPlayer.src = '';
+                plotContainer.classList.add('hidden');
+                f0Plot.src = '';
                 statusMessage.textContent = 'Recording started...';
 
                 console.log('Recording started...');
@@ -102,7 +111,7 @@
 
         // Function to upload the audio to the server
         async function uploadAudio(audioBlob) {
-            statusMessage.textContent = 'Uploading audio...';
+            statusMessage.textContent = 'Uploading audio for analysis...';
             const formData = new FormData();
             formData.append('audio_file', audioBlob, 'recording.wav');
 
@@ -115,8 +124,11 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    statusMessage.textContent = 'File uploaded successfully!';
+                    statusMessage.textContent = 'Analysis complete!';
                     console.log('Server response:', result);
+                    // Display the plot from the server response
+                    f0Plot.src = result.plot_url;
+                    plotContainer.classList.remove('hidden');
                 } else {
                     statusMessage.textContent = `Error uploading file: ${result.error}`;
                     console.error('Server error:', result.error);
@@ -135,7 +147,6 @@
                 startRecording();
             }
         });
-
     </script>
 </body>
 </html>
