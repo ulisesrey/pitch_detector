@@ -26,6 +26,8 @@
             <h2 class="text-xl font-medium mb-2">Your Recording:</h2>
             <audio id="audioPlayer" controls class="w-full rounded-md"></audio>
         </div>
+        
+        <div id="statusMessage" class="mt-4 text-sm font-medium text-gray-600"></div>
     </div>
 
     <script>
@@ -33,6 +35,7 @@
         const recordButton = document.getElementById('recordButton');
         const audioPlayer = document.getElementById('audioPlayer');
         const audioContainer = document.getElementById('audioContainer');
+        const statusMessage = document.getElementById('statusMessage');
 
         let mediaRecorder;
         let audioChunks = [];
@@ -45,26 +48,25 @@
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 
+                audioChunks = [];
                 // Event handler for when data becomes available
                 mediaRecorder.ondataavailable = (event) => {
                     audioChunks.push(event.data);
                 };
 
                 // Event handler for when recording stops
-                mediaRecorder.onstop = () => {
+                mediaRecorder.onstop = async () => {
                     // Create a Blob from the audio chunks
                     const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    // Create a URL for the Blob
+                    // Create a URL for the Blob to play it in the browser
                     const audioUrl = URL.createObjectURL(audioBlob);
                     
                     // Set the audio player's source and show the container
                     audioPlayer.src = audioUrl;
                     audioContainer.classList.remove('hidden');
 
-                    // Reset for the next recording
-                    audioChunks = [];
-                    // You will send this audioBlob to the server in a later step
-                    console.log('Recording stopped. Audio Blob created:', audioBlob);
+                    // Now, send the audio to the server
+                    await uploadAudio(audioBlob);
                 };
 
                 // Start the recording
@@ -77,13 +79,13 @@
                 // Hide the audio player while recording
                 audioContainer.classList.add('hidden');
                 audioPlayer.src = '';
+                statusMessage.textContent = 'Recording started...';
 
                 console.log('Recording started...');
 
             } catch (error) {
                 console.error('Error accessing microphone:', error);
-                // In a real app, you would show a message to the user here
-                alert('Could not access microphone. Please allow microphone permissions.');
+                statusMessage.textContent = 'Could not access microphone. Please allow microphone permissions.';
             }
         }
 
@@ -94,7 +96,34 @@
                 recordButton.textContent = 'Start Recording';
                 recordButton.classList.remove('bg-red-500', 'hover:bg-red-600');
                 recordButton.classList.add('bg-blue-500', 'hover:bg-blue-600');
-                console.log('Recording stopped.');
+                statusMessage.textContent = 'Recording stopped.';
+            }
+        }
+
+        // Function to upload the audio to the server
+        async function uploadAudio(audioBlob) {
+            statusMessage.textContent = 'Uploading audio...';
+            const formData = new FormData();
+            formData.append('audio_file', audioBlob, 'recording.wav');
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/upload-audio', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    statusMessage.textContent = 'File uploaded successfully!';
+                    console.log('Server response:', result);
+                } else {
+                    statusMessage.textContent = `Error uploading file: ${result.error}`;
+                    console.error('Server error:', result.error);
+                }
+            } catch (error) {
+                statusMessage.textContent = 'Error during upload. Check console for details.';
+                console.error('Error uploading file:', error);
             }
         }
 
