@@ -29,7 +29,7 @@ def plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=None, label=None)
     ax.set_xlabel('Time (s)')
     ax.set_ylabel('Fundamental Frequency (Hz)')
     ax.set_title(f'F₀ estimation of {label}')
-    ax.legend()
+    #ax.legend()
     ax.grid(True)
     #ax.tight_layout()
     return ax

@@ -60,10 +60,11 @@ def upload_audio():
             data, fs = librosa.load(filepath, sr=None)
 
             # Define parameters for pitch detection
-            fmin = 50
-            fmax = 450
-            frame_length = 1024
-            hop_length = 256  # or 512
+            fmin = 80
+            fmax = 300
+            hop_length = 256
+            frame_length = 8 * hop_length
+
             
             # This uses librosa's PYIN algorithm. You can replace this with your compute_f0 function.
             # f0pyin, voiced_flag, voiced_prob, times = compute_f0(data,
@@ -76,7 +77,8 @@ def upload_audio():
             # Let's create a plot
             fig, ax = plt.subplots()
             ax = plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=ax, label=None)
-            
+            ax.set_ylim([75, 200])
+            ax.set_title("F₀ estimation of your input")
             # Save the plot to the static folder so the frontend can access it
             plot_filename = f"{os.path.splitext(audio_file.filename)[0]}_f0_plot.png"
             plot_filepath = os.path.join(PLOT_FOLDER, plot_filename)
