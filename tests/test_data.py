@@ -9,14 +9,19 @@ from pitch_detector_app.plots import plot_f0
 # TODO: Should move to a config yaml?
 TXT_PATH = "data/raw/basic_chinese_characters_ankicard.txt"
 CSV_PATH = "data/raw/basic_chinese_characters_ankicard.csv"
+WAV_EXAMPLE_PATH = "data/examples/xiao_example.wav"
+
 
 def test_csv_exists():
+    """Test if csv file exists"""
     assert os.path.exists(CSV_PATH), f"CSV not found at {CSV_PATH}"
 
 def test_txt_exists():
+    """Test if original txt file exists"""
     assert os.path.exists(TXT_PATH), f"CSV not found at {TXT_PATH}"
 
 def test_csv_columns():
+    """Test if csv has the correct columns"""
     df = df = pd.read_csv(CSV_PATH)
     actual_columns = set(df.columns)
     # These are different than the ones in processing clean_df(), becaus new ones are generated
@@ -29,14 +34,27 @@ def test_csv_columns():
 
     assert expected_columns.issubset(actual_columns), f"Missing columns: {missing}"
 
-def test_plot_returns_axes():
-    # Call your plotting function (it should return an Axes object or array of Axes)
-    # TODO: Change these to global params
+def test_computef0():
+    """Test output of computef0"""
     fmin = 50
     fmax = 450
     frame_length = 1024
     hop_length = 256
-    wav_filepath = "data/examples/xiao_example.wav"
+    wav_filepath = WAV_EXAMPLE_PATH
+    data, fs = librosa.load(wav_filepath, sr=None)
+
+    # Check that computef0 returns 4 values
+    assert len(compute_f0(data, fs, fmin, fmax, frame_length, hop_length)) == 4
+
+def test_plotf0_returns_axes():
+    """Test plot function returns an ax object"""
+    # Call your plotting function (it should return an Axes object or array of Axes)
+    # TODO: Change these to global params?
+    fmin = 50
+    fmax = 450
+    frame_length = 1024
+    hop_length = 256
+    wav_filepath = WAV_EXAMPLE_PATH
     data, fs = librosa.load(wav_filepath, sr=None)
 
     f0pyin, voiced_flag, voiced_prob, times = compute_f0(data, fs, fmin, fmax, frame_length, hop_length)
@@ -48,7 +66,7 @@ def test_plot_returns_axes():
 
 
 def test_tone_dict_exists_and_matches():
-
+    """Test dict of Tones"""
     from pitch_detector_app.tones import TONE_DICT
     expected = {
         "Tone 1 ( ̄)": "\u0304",
