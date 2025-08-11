@@ -1,3 +1,4 @@
 data/sounds/*.mp3
 data/sounds/*.wav
 .DS_Store
+pitch_detector_app/__pycache__/*.pyc
