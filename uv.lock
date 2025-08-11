@@ -1253,7 +1253,7 @@ wheels = [
 ]
 
 [[package]]
-name = "pitch-detector"
+name = "pitch-detector-app"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [
