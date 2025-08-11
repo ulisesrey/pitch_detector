@@ -8,17 +8,9 @@ from tones import TONE_DICT
 
 NPZ_FILEPATH = "data/processed/f0_values.npz"
 
-def plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=None, label=None):
-    """Calculate and plot F0 Frequency using PYIN algorithm"""
-    f0pyin, voiced_flag, voiced_prob = librosa.pyin(data.astype(float), 
-                                    sr = fs, # sampling frequency
-                                    fmin=fmin, 
-                                    fmax=fmax, 
-                                    frame_length=frame_length, 
-                                    hop_length=hop_length) 
+def plot_f0(f0pyin, voiced_flag, voiced_prob, times, ax=None, label=None):
+    """plot F0 Frequency using PYIN algorithm"""
 
-    # Convert frame indices to time (in seconds)
-    times = librosa.frames_to_time(np.arange(len(f0pyin)), sr=fs, hop_length=hop_length)
     # Plot
     if ax is None:
         ax = plt.gca()

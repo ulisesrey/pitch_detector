@@ -76,7 +76,10 @@ def upload_audio():
 
             # Let's create a plot
             fig, ax = plt.subplots()
-            ax = plot_f0(data, fs, fmin, fmax, frame_length, hop_length, ax=ax, label=None)
+            # Compute
+            f0pyin, voiced_flag, voiced_prob, times = compute_f0(data, fs, fmin, fmax, frame_length, hop_length)
+            # Plot
+            ax = plot_f0(f0pyin, voiced_flag, voiced_prob, times, ax=ax, label=None)
             ax.set_ylim([75, 200])
             ax.set_title("F₀ estimation of your input")
             # Save the plot to the static folder so the frontend can access it
