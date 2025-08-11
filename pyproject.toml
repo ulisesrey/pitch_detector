@@ -1,54 +1,14 @@
-[build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
-
 [project]
-name = "pitch_detector_app"
-version = "0.0.1"
-description = "Detect and visualize pitches from audio samples."
-authors = [
-  { name = "Ulises Rey" },
-]
-license = { file = "LICENSE" }
+name = "pitch-detector"
+version = "0.1.0"
+description = "Add your description here"
 readme = "README.md"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License"
-]
+requires-python = ">=3.13"
 dependencies = [
     "flask>=3.1.1",
     "flask-cors>=6.0.1",
-    "gunicorn>=23.0.0",
-    "ipython",
-    "jupyterlab",
     "librosa>=0.11.0",
-    "loguru",
-    "matplotlib",
-    "mkdocs",
-    "notebook",
-    "numpy",
-    "pandas",
-    "pip",
-    "pytest",
-    "python-dotenv",
-    "ruff",
-    "scikit-learn",
-    "soundfile>=0.13.1",
-    "tqdm",
-    "typer",
+    "matplotlib>=3.10.5",
+    "pandas>=2.3.1",
+    "tqdm>=4.67.1",
 ]
-requires-python = "~=3.12.0"
-
-
-[tool.ruff]
-line-length = 99
-src = ["pitch_detector"]
-include = ["pyproject.toml", "pitch_detector/**/*.py"]
-
-[tool.ruff.lint]
-extend-select = ["I"]  # Add import sorting
-
-[tool.ruff.lint.isort]
-known-first-party = ["pitch_detector"]
-force-sort-within-sections = true
-
