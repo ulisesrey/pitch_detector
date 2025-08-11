@@ -1,1 +1,1 @@
-from pitch_detector import config, contour, plots  # noqa: F401
+from pitch_detector_app import config, contour, plots  # noqa: F401
