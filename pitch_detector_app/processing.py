@@ -5,7 +5,8 @@ import os
 from tones import TONE_DICT
 
 def clean_df(path="data/raw/basic_chinese_characters_ankicard.txt", sound_path="data/sounds"):
-
+    """Read from the .txt file generated from Anki and return a clean csv"""
+    
     column_names = ["character", "character_HTML", "pinyin_HTML",
         "english_gloss", "example1", "example2", "example3", "example4", "example5",
         "chinese_sentence_HTML", "english_translation", "pinyin_sentence", "sound_tag",
