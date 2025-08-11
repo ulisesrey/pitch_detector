@@ -64,15 +64,7 @@ def upload_audio():
             fmax = 300
             hop_length = 256
             frame_length = 8 * hop_length
-
-            
-            # This uses librosa's PYIN algorithm. You can replace this with your compute_f0 function.
-            # f0pyin, voiced_flag, voiced_prob, times = compute_f0(data,
-            #                                                     fs,
-            #                                                     fmin,
-            #                                                     fmax,
-            #                                                     frame_length,
-            #                                                     hop_length)
+            ylims = [75, 200]
 
             # Let's create a plot
             fig, ax = plt.subplots()
@@ -80,7 +72,7 @@ def upload_audio():
             f0pyin, voiced_flag, voiced_prob, times = compute_f0(data, fs, fmin, fmax, frame_length, hop_length)
             # Plot
             ax = plot_f0(f0pyin, voiced_flag, voiced_prob, times, ax=ax, label=None)
-            ax.set_ylim([75, 200])
+            ax.set_ylim(ylims)
             ax.set_title("F₀ estimation of your input")
             # Save the plot to the static folder so the frontend can access it
             plot_filename = f"{os.path.splitext(audio_file.filename)[0]}_f0_plot.png"
