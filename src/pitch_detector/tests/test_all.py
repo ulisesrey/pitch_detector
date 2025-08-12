@@ -3,8 +3,8 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import librosa
-from contour import compute_f0
-from plots import plot_f0
+from pitch_detector.contour import compute_f0
+from pitch_detector.plots import plot_f0
 
 # TODO: Should move to a config yaml?
 TXT_PATH = "data/raw/basic_chinese_characters_ankicard.txt"
@@ -67,7 +67,7 @@ def test_plotf0_returns_axes():
 
 def test_tone_dict_exists_and_matches():
     """Test dict of Tones"""
-    from tones import TONE_DICT
+    from pitch_detector.tones import TONE_DICT
     expected = {
         "Tone 1 ( ̄)": "\u0304",
         "Tone 2 ( ́)": "\u0301",

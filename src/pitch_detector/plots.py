@@ -49,7 +49,7 @@ def plot_f0_all(df, f0_data):
         ax.set_xlabel("Time (s)")
         ax.set_ylabel("F₀ (Hz)")
         ax.set_ylim([50, 250])
-        ax.set_xlim([0, 2])
+        ax.set_xlim([0, 1])
         ax.grid(True)
             
 if __name__ == "__main__":
