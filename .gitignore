@@ -1,4 +1,8 @@
 data/sounds/*.mp3
 data/sounds/*.wav
 .DS_Store
-pitch_detector_app/__pycache__/*.pyc
+__pycache__/*.pyc
+tests/__pycache__/*.pyc
+uploads/recording.wav
+static/plots/recording_f0_plot.png
+.python-version
