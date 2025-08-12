@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-from contour import compute_f0
-from plots import plot_f0
+from pitch_detector.contour import compute_f0
+from pitch_detector.plots import plot_f0
 
 # Initialize Flask app
 app = Flask(__name__)
