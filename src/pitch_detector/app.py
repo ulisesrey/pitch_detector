@@ -88,8 +88,9 @@ def upload_audio():
             }), 200
 
     except Exception as e:
-        # Return an error message if something goes wrong
-        return jsonify({'error': str(e)}), 500
+        print(f"Server-side error during file upload/analysis: {e}", file=sys.stderr)
+        # Also include the type of error for better debugging
+        return jsonify({'error': f'Processing failed: {type(e).__name__} - {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
