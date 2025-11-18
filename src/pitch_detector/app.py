@@ -64,7 +64,7 @@ def upload_audio():
             fmax = 300
             hop_length = 256
             frame_length = 8 * hop_length
-            ylims = [75, 200]
+            ylims = [75, 350]
 
             # Let's create a plot
             fig, ax = plt.subplots()
