@@ -6,3 +6,5 @@ tests/__pycache__/*.pyc
 uploads/recording.wav
 static/plots/recording_f0_plot.png
 .python-version
+src/pitch_detector/tests/__pycache__/*.pyc
+src/pitch_detector/__pycache__/*.pyc
