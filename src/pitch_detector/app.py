@@ -33,11 +33,9 @@ CORS(app)
 
 # Ensure the 'uploads' directory exists
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
-PLOT_FOLDER = os.path.join(os.path.dirname(__file__), 'static/plots')
+
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
-if not os.path.exists(PLOT_FOLDER):
-    os.makedirs(PLOT_FOLDER)
 
 @app.route('/', methods=['GET'])
 def serve_index():
@@ -82,17 +80,6 @@ def upload_audio():
             
             # Compute
             f0pyin, voiced_flag, voiced_prob, times = compute_f0(data, fs, fmin, fmax, frame_length, hop_length)
-            # # Plot
-            # fig, ax = plt.subplots()
-            # ylims = [75, 350]
-            # ax = plot_f0(f0pyin, voiced_flag, voiced_prob, times, ax=ax, label=None)
-            # # ax.set_ylim(ylims)
-            # ax.set_title("F₀ estimation of your input")
-            # # Save the plot to the static folder so the frontend can access it
-            # plot_filename = f"{os.path.splitext(audio_file.filename)[0]}_f0_plot.png"
-            # plot_filepath = os.path.join(PLOT_FOLDER, plot_filename)
-            # plt.savefig(plot_filepath)
-            # plt.close(fig) # Close the figure to free up memory
 
             # Return the path to the plot in the JSON response
             return jsonify({
