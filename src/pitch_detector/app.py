@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-from contour import compute_f0
-from plots import plot_f0
+from .contour import compute_f0
+from .plots import plot_f0
 
 def to_list(arr):
     """Convert numpy array to Python list, turning NaN into None for JSON."""

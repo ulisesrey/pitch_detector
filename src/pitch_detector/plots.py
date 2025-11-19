@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import librosa
 import numpy as np
-from tones import TONE_DICT
+from .tones import TONE_DICT
 
 NPZ_FILEPATH = "data/processed/f0_values.npz"
 
