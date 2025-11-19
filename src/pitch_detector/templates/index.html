@@ -13,7 +13,7 @@
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl text-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl text-center overflow-hidden">
         <h1 class="text-2xl font-bold mb-4">Audio Recorder</h1>
         
         <button 
@@ -31,8 +31,8 @@
         <div id="statusMessage" class="mt-4 text-sm font-medium text-gray-600"></div>
 
         <div id="plotContainer" class="mt-6 hidden">
-            <h2 class="text-xl font-medium mb-2">Analysis Plot:</h2>
-            <div id="f0Plot" class="w-full rounded-md" style="width: 100%; max-width: 100%";></div>
+            <h2 class="text-xl font-medium mb-2 text-center">F₀ estimation of your input:</h2>
+            <div id="f0Plot" class="w-full rounded-md"></div>
         </div>
     </div>
 
@@ -151,13 +151,13 @@
                     };
 
                     const layout = {
-                        title: 'F₀ estimation of your input',
+                        // title: 'F₀ estimation of your input',
                         xaxis: { title: 'Time (s)' },
                         yaxis: { title: 'Frequency (Hz)' },
                         margin: { l: 50, r: 10, t: 40, b: 40 }
                     };
 
-                    Plotly.newPlot(f0Plot, [trace], layout, { responsive: true, modebar: {orientation: 'h'} });
+                    Plotly.newPlot(f0Plot, [trace], layout, { responsive: true });
 
                     plotContainer.classList.remove('hidden');
                 } else {
@@ -165,7 +165,7 @@
                     console.error('Server error:', result.error);
                 }
             } catch (error) {
-                statusMessage.textContent = 'Error during upload. Check console for details.';
+                statusMessage.textContent = 'Error during upload. Check console fofr details.';
                 console.error('Error uploading file:', error);
             }
         }
