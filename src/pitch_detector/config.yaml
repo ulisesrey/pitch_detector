@@ -1,0 +1,5 @@
+pitch_detection:
+  fmin: 80
+  fmax: 1500
+  hop_length: 256
+  frame_length_multiplier: 8
