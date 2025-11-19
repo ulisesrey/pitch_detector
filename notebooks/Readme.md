@@ -3,7 +3,12 @@ Original source of this notebook is available [here](https://speechprocessingboo
 
 It is from the book **Introduction to Speech Processing**.
 
-```
+### Referencing
+
+Tom Bäckström, Okko Räsänen, Abraham Zewoudie, Pablo Pérez Zarazaga, Liisa Koivusalo, Sneha Das, Esteban Gómez Mellado, Mariem Bouafif Mansali, Daniel Ramos, Sudarsana Kadiri, Paavo Alku, and Mohammad Hassan Vali “Introduction to Speech Processing”, 2nd Edition, 2022. URL: https://speechprocessingbook.aalto.fi, [DOI: 10.5281/zenodo.6821775.](https://doi.org/10.5281/zenodo.6821775)
+
+
+```bibtex
 @book{itsp2022,
    title = {Introduction to Speech Processing},
    edition = 2,
