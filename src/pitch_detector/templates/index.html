@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audio Recorder</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -12,7 +13,7 @@
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl text-center">
         <h1 class="text-2xl font-bold mb-4">Audio Recorder</h1>
         
         <button 
@@ -31,7 +32,7 @@
 
         <div id="plotContainer" class="mt-6 hidden">
             <h2 class="text-xl font-medium mb-2">Analysis Plot:</h2>
-            <img id="f0Plot" class="w-full rounded-md">
+            <div id="f0Plot" class="w-full rounded-md" style="width: 100%; max-width: 100%";></div>
         </div>
     </div>
 
@@ -87,7 +88,7 @@
                 audioContainer.classList.add('hidden');
                 audioPlayer.src = '';
                 plotContainer.classList.add('hidden');
-                f0Plot.src = '';
+                // f0Plot.src = ''; Not needed now
                 statusMessage.textContent = 'Recording started...';
 
                 console.log('Recording started...');
@@ -126,10 +127,38 @@
                 if (response.ok) {
                     statusMessage.textContent = 'Analysis complete!';
                     console.log('Server response:', result);
-                    // Display the plot from the server response
-                    const plotUrl = result.plot_url;
-                    // Append a timestamp to the URL to prevent caching
-                    f0Plot.src = `${plotUrl}?t=${new Date().getTime()}`;
+                    
+                    // Use the F0 data from the server to make an interactive plot
+                    const times = result.times;
+                    const f0 = result.f0
+                    
+                    // Optional: filter out nulls so only voiced frames are plotted
+                    const voicedX = [];
+                    const voicedY = [];
+                    for (let i = 0; i < f0.length; i++) {
+                        const val = f0[i];
+                        if (val !== null && !Number.isNaN(val)) {
+                            voicedX.push(times[i]);
+                            voicedY.push(val);
+                        }
+                    }
+
+                    const trace = {
+                        x: voicedX,
+                        y: voicedY,
+                        mode: 'lines+markers',
+                        name: 'F₀'
+                    };
+
+                    const layout = {
+                        title: 'F₀ estimation of your input',
+                        xaxis: { title: 'Time (s)' },
+                        yaxis: { title: 'Frequency (Hz)' },
+                        margin: { l: 50, r: 10, t: 40, b: 40 }
+                    };
+
+                    Plotly.newPlot(f0Plot, [trace], layout, { responsive: true, modebar: {orientation: 'h'} });
+
                     plotContainer.classList.remove('hidden');
                 } else {
                     statusMessage.textContent = `Error uploading file: ${result.error}`;

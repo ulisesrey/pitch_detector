@@ -10,8 +10,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-from .contour import compute_f0
-from .plots import plot_f0
+from contour import compute_f0
+from plots import plot_f0
+
+def to_list(arr):
+    """Convert numpy array to Python list, turning NaN into None for JSON."""
+    arr = np.asarray(arr)
+    out = []
+    for x in arr:
+        if isinstance(x, np.generic):
+            x = x.item()
+        if isinstance(x, float) and np.isnan(x):
+            out.append(None)
+        else:
+            out.append(x)
+    return out
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -54,7 +67,7 @@ def upload_audio():
             filepath = os.path.join(UPLOAD_FOLDER, audio_file.filename)
             audio_file.save(filepath)
             
-            print(f"File saved successfully at {filepath}")
+            #print(f"File saved successfully at {filepath}")
 
             # Now, perform the audio analysis
             data, fs = librosa.load(filepath, sr=None)
@@ -64,27 +77,33 @@ def upload_audio():
             fmax = 300
             hop_length = 256
             frame_length = 8 * hop_length
-            ylims = [75, 350]
 
             # Let's create a plot
-            fig, ax = plt.subplots()
+            
             # Compute
             f0pyin, voiced_flag, voiced_prob, times = compute_f0(data, fs, fmin, fmax, frame_length, hop_length)
-            # Plot
-            ax = plot_f0(f0pyin, voiced_flag, voiced_prob, times, ax=ax, label=None)
-            ax.set_ylim(ylims)
-            ax.set_title("F₀ estimation of your input")
-            # Save the plot to the static folder so the frontend can access it
-            plot_filename = f"{os.path.splitext(audio_file.filename)[0]}_f0_plot.png"
-            plot_filepath = os.path.join(PLOT_FOLDER, plot_filename)
-            plt.savefig(plot_filepath)
-            plt.close(fig) # Close the figure to free up memory
+            # # Plot
+            # fig, ax = plt.subplots()
+            # ylims = [75, 350]
+            # ax = plot_f0(f0pyin, voiced_flag, voiced_prob, times, ax=ax, label=None)
+            # # ax.set_ylim(ylims)
+            # ax.set_title("F₀ estimation of your input")
+            # # Save the plot to the static folder so the frontend can access it
+            # plot_filename = f"{os.path.splitext(audio_file.filename)[0]}_f0_plot.png"
+            # plot_filepath = os.path.join(PLOT_FOLDER, plot_filename)
+            # plt.savefig(plot_filepath)
+            # plt.close(fig) # Close the figure to free up memory
 
             # Return the path to the plot in the JSON response
             return jsonify({
                 'message': 'File uploaded and analyzed successfully',
                 'filepath': filepath,
-                'plot_url': f'/static/plots/{plot_filename}' # URL needs to be relative!
+                'f0': to_list(f0pyin), #.tolist(),
+                'times': to_list(times), #.tolist(),
+                'voiced_flag': to_list(voiced_flag),
+                'voiced_prob': to_list(voiced_prob),
+                'default_fmin': fmin,
+                'default_fmax': fmax,
             }), 200
 
     except Exception as e:
