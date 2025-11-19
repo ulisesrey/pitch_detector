@@ -26,4 +26,4 @@ RUN uv sync
 COPY . .
 
 # 7. Entrypoint: Command to run the application using Gunicorn
-CMD [".venv/bin/python", "-m", "gunicorn", "--bind", "0.0.0.0:$PORT", "src.pitch_detector.app:app"]
+CMD /bin/sh -c ".venv/bin/python -m gunicorn --bind 0.0.0.0:$PORT src.pitch_detector.app:app"
