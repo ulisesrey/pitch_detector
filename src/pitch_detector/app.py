@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import os
 import librosa
+import yaml
 
 import numpy as np
 import sys
@@ -25,6 +26,22 @@ def to_list(arr):
 app = Flask(__name__)
 # Enable CORS to allow your HTML file to make requests
 CORS(app)
+
+# ----------  LOAD VARIABLES FROM config.yaml  ----------
+# Path to config.yaml (same directory as this file)
+CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.yaml")
+
+with open(CONFIG_PATH, "r") as f:
+    config = yaml.safe_load(f)
+
+# Extract pitch detection params
+pitch_detection_config = config.get("pitch_detection", {})
+FMIN = pitch_detection_config.get("fmin", 80)
+FMAX = pitch_detection_config.get("fmax", 1500)
+HOP_LENGTH = pitch_detection_config.get("hop_length", 256)
+frame_length_multiplier = pitch_detection_config.get("frame_length_multiplier", 8)
+FRAME_LENGTH = HOP_LENGTH * frame_length_multiplier
+# ---------- /LOAD VARIABLES FROM config.yaml ----------
 
 # Ensure the 'uploads' directory exists
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
@@ -64,28 +81,25 @@ def upload_audio():
 
             # Now, perform the audio analysis
             data, fs = librosa.load(filepath, sr=None)
-
-            # Define parameters for pitch detection
-            fmin = 80
-            fmax = 1500
-            hop_length = 256
-            frame_length = 8 * hop_length
-
-            # Let's create a plot
-            
+          
             # Compute
-            f0pyin, voiced_flag, voiced_prob, times = compute_f0(data, fs, fmin, fmax, frame_length, hop_length)
+            f0pyin, voiced_flag, voiced_prob, times = compute_f0(data,
+                                                                 fs,
+                                                                 FMIN,
+                                                                 FMAX,
+                                                                 FRAME_LENGTH,
+                                                                 HOP_LENGTH)
 
-            # Return the path to the plot in the JSON response
+            # Return the data in JSON response
             return jsonify({
                 'message': 'File uploaded and analyzed successfully',
                 'filepath': filepath,
-                'f0': to_list(f0pyin), #.tolist(),
-                'times': to_list(times), #.tolist(),
+                'f0': to_list(f0pyin),
+                'times': to_list(times),
                 'voiced_flag': to_list(voiced_flag),
                 'voiced_prob': to_list(voiced_prob),
-                'default_fmin': fmin,
-                'default_fmax': fmax,
+                'default_fmin': FMIN,
+                'default_fmax': FMAX,
             }), 200
 
     except Exception as e:
