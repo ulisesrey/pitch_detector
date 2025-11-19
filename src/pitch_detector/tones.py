@@ -1,3 +1,5 @@
+"""Dictionary of the different tones"""
+
 TONE_DICT = {
     "Tone 1 ( ̄)": "\u0304",
     "Tone 2 ( ́)": "\u0301",
