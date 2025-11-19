@@ -1,17 +1,12 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import os
 import librosa
-import librosa.display
-import matplotlib
-matplotlib.use('Agg')  # This is the critical line to prevent GUI errors
-import matplotlib.pyplot as plt
 
 import numpy as np
 import sys
 
 from .contour import compute_f0
-from .plots import plot_f0
 
 def to_list(arr):
     """Convert numpy array to Python list, turning NaN into None for JSON."""
