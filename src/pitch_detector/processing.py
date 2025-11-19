@@ -2,7 +2,7 @@ import pandas as pd
 import unicodedata
 import re
 import os
-from .tones import TONE_DICT
+from tones import TONE_DICT
 
 def clean_df(path="data/raw/basic_chinese_characters_ankicard.txt", sound_path="data/sounds"):
     """Read from the .txt file generated from Anki and return a clean csv"""
