@@ -74,7 +74,7 @@ def upload_audio():
 
             # Define parameters for pitch detection
             fmin = 80
-            fmax = 300
+            fmax = 500
             hop_length = 256
             frame_length = 8 * hop_length
 
