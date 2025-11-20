@@ -2,24 +2,37 @@
 
 A web application for real-time fundamental frequency (F0) extraction and visualization, originally designed to help Chinese learners analyze and practice pronunciation tones.
 
+- [Pitch Detector](#pitch-detector)
+  - [Deployment](#deployment)
+  - [Usage](#usage)
+  - [Project Organization](#project-organization)
+  - [Motivation](#motivation)
+  - [Results](#results)
+  - [Methods](#methods)
+    - [Convert mp3 to wav](#convert-mp3-to-wav)
+    - [Data Processing](#data-processing)
+    - [F₀ extraction](#f-extraction)
+  - [Contributions and Future Features](#contributions-and-future-features)
+
+
 ## Deployment
-The app is available [here](https://pitchdetector.up.railway.app/)
+The app is available on [https://pitchdetector.up.railway.app/](https://pitchdetector.up.railway.app/)
 
 If it's not available online or you want to test it locally, you can clone the repository and run it with:
 ```
 uv run gunicorn --bind 0.0.0.0:8000 src.pitch_detector.app:app
 ```
 
-Then open an internet browser like Firefox and copy http://0.0.0.0:8000 into the address bar.
+Then open your browser and navigate to http://127.0.0.1:8000 (or http://localhost:8000).
 
 ## Usage
 
 You should see this:
-![alt text](website_example.png)
+![alt text](reports/figures/website_example.png)
 Press "Start Recording" and say/sing/play something so the F0 frequency of that sound can be extracted and plotted.
 
-The result would look something like this:
-![alt text](pitch_example.png)
+The extracted pitch contour or fundamental frequency (F₀) is plotted in the section below the recorder:
+![alt text](reports/figures/pitch_example.png)
 
 ## Project Organization
 
@@ -67,16 +80,17 @@ The result would look something like this:
 ## Motivation
 
 As I started learning Chinese I was very interested in the tones in Chinese language. In Chinese, words have tones, and the same spelling but with different tone can mean different things. For example the word "ma" depending on which tone, can mean different words like "mother", "numb", "horse" or "to scold". For people who learn a language with tones for the first time this can be challenging. I watched many videos to hear the difference [[1]](https://www.youtube.com/watch?v=RRaHXPDIV-4) [[2]](https://www.youtube.com/shorts/AT9-FQuJ6DQ) and understood that the first tone (  ̄ ) is high pitched, the second one (  ́ ) is ascending, the third one (  ̌ ) going down and then up, the fourth one (  ̀ ) going down, and lastly the neutral one.
+
 ```
-Tone 1 ( ̄): mā, mother
-Tone 2 ( ́): má, numb
-Tone 3 ( ̌): mǎ, horse
-Tone 4 ( ̀): mà, to scold
-Tone 5 (neutral): ma, used as a question particle
+Tone 1 ( ̄): 妈, mā, mother
+Tone 2 ( ́): 麻, má, numb
+Tone 3 ( ̌): 马, mǎ, horse
+Tone 4 ( ̀): 骂, mà, to scold
+Tone 5 (neutral): 吗, ma, used as a question particle
 ```
 
 Often this is depicted in a figure like this one:
-![alt text](tone_graph.png)
+![alt text](reports/figures/tone_graph.png)
 
 I wanted to:
 1.  See how real data, real words spoken in chinese would look on a pitch graph
@@ -88,7 +102,7 @@ For 2. I created the app to record the sound and plot the F₀.
 
 ## Results
 Indeed, by analzying the fundamental frequency of each sound file and grouping them according to their tone I could obtain beautiful pitch curves very similar to the theoretical ones.
-![alt text](Figure_1.png)
+![alt text](reports/figures/Figure_1.png)
 Notes:
 *Audio files were not aligned on the temporal axis, so they do not start exactly at the same time. Some files contained two pronunciation variants of the same Hanzi in the same audio file, only the first one is shown.* 
 
@@ -104,7 +118,7 @@ for f in *.mp3; do ffmpeg -i "$f" -acodec pcm_s16le -ar 22050 -ac 1 "${f%.mp3}.w
 The ankicard dataset was exported to a .txt file and processed with the processing.py module.
 
 ### F₀ extraction
-Extraction of the Fundamental Frequency (F₀) was performed with the librosa library using the ```librosa.pyin()``` function.
+Extraction of the Fundamental Frequency (F₀) was performed with the librosa library using the ```librosa.pyin()``` function. Check the contour.py module for more details.
 
-## Further development
-Check the issues and add one if you would like to add a feature to this project.
+## Contributions and Future Features
+Check the [Issues](https://github.com/ulisesrey/pitch_detector/issues) tab to see planned features or feel free to open a new issue/Pull Request to suggest a feature or improvement.
