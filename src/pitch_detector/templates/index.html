@@ -11,10 +11,17 @@
             font-family: 'Inter', sans-serif;
         }
     </style>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="/static/favicon-96x96.png">
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+
+    <link rel="manifest" href="/static/site.webmanifest">
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl text-center overflow-hidden">
-        <h1 class="text-2xl font-bold mb-4">Audio Recorder</h1>
+        <h1 class="text-2xl font-bold mb-4">Pitch Detector</h1>
         
         <button 
             id="recordButton" 
@@ -34,6 +41,16 @@
             <h2 class="text-xl font-medium mb-2 text-center">F₀ estimation of your input:</h2>
             <div id="f0Plot" class="w-full rounded-md"></div>
         </div>
+        <footer class="mt-8 text-xs text-gray-500 text-center">
+            Developed by Ulises Rey. Learn about it on <a 
+                href="https://github.com/ulisesrey/pitch_detector"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline hover:text-gray-700"
+            >
+                Github.
+            </a>
+        </footer>
     </div>
 
     <script>
