@@ -12,6 +12,7 @@ A web application for real-time fundamental frequency (F0) extraction and visual
     - [Convert mp3 to wav](#convert-mp3-to-wav)
     - [Data Processing](#data-processing)
     - [F₀ extraction](#f-extraction)
+  - [Author](#author)
   - [Contributions and Future Features](#contributions-and-future-features)
 
 
@@ -124,6 +125,10 @@ The ankicard dataset was exported to a .txt file and processed with the processi
 
 ### F₀ extraction
 Extraction of the Fundamental Frequency (F₀) was performed with the librosa library using the ```librosa.pyin()``` function. Check the contour.py module for more details.
+
+## Author
+This package was created and is maintained by **Ulises Rey**.
+* **GitHub:** [@ulisesrey](https://github.com/ulisesrey)
 
 ## Contributions and Future Features
 Check the [Issues](https://github.com/ulisesrey/pitch_detector/issues) tab to see planned features or feel free to open a new issue/Pull Request to suggest a feature or improvement.
