@@ -1,10 +1,8 @@
 # Initialization
-import os
 import matplotlib.pyplot as plt
 import pandas as pd
-import librosa
 import numpy as np
-from .tones import TONE_DICT
+from natsort import natsorted
 
 NPZ_FILEPATH = "data/processed/f0_values.npz"
 
@@ -36,7 +34,7 @@ def plot_f0_all(df, f0_data):
     with the contour module."""
     
     fig, axes = plt.subplots(ncols=len(df["tone"].unique()))
-    for tone_n, tone in enumerate(df["tone"].unique()):
+    for tone_n, tone in enumerate(natsorted(df["tone"].unique())):
         filtered_df = df[df["tone"]==tone]    
         for index, row in filtered_df.iterrows():
             f0pyin = f0_data[f"{index}_f0pyin"]
@@ -48,15 +46,17 @@ def plot_f0_all(df, f0_data):
     for ax in axes:
         ax.set_xlabel("Time (s)")
         ax.set_ylabel("F₀ (Hz)")
-        ax.set_ylim([50, 250])
-        ax.set_xlim([0, 1])
+        ax.set_ylim([50, 230])
+        ax.set_xlim([0, 0.8])
         ax.grid(True)
             
 if __name__ == "__main__":
     df = pd.read_csv("data/raw/basic_chinese_characters_ankicard.csv", index_col=0, header=0)
+    # Filter if needed
+    df_filtered = df[df['tone'] != 'Tone 5 (neutral)']
     f0_data = np.load("data/processed/f0_values.npz")
     #plot_tone_distribution(df)
     #plt.show()
     #plot_f0_all_tones(df)
-    plot_f0_all(df, f0_data)
+    plot_f0_all(df_filtered, f0_data)
     plt.show()
