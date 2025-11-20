@@ -1,8 +1,9 @@
 [project]
 name = "pitch-detector"
 version = "0.1.0"
-description = "Add your description here"
+description = "A web application for real-time fundamental frequency (F0) extraction and visualization, originally designed to help Chinese learners analyze and practice pronunciation tones."
 readme = "README.md"
+authors = [{name = "Ulises Rey"}]
 requires-python = ">=3.12,<3.14"
 dependencies = [
     "flask>=3.1.1",
@@ -16,6 +17,7 @@ dependencies = [
     "pyyaml>=6.0.3",
     "tqdm>=4.67.1",
 ]
+
 
 [tool.setuptools.packages]
 find = { where = ["src"] }
