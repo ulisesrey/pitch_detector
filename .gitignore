@@ -9,3 +9,5 @@ static/plots/recording_f0_plot.png
 src/pitch_detector/tests/__pycache__/*.pyc
 src/pitch_detector/__pycache__/*.pyc
 src/pitch_detector.egg-info/*
+# Tone Graph Keynote file
+reports/figures/tone_graph.key
